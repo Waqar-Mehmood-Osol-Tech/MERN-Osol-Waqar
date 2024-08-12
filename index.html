@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List by Waqar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            /* background: linear-gradient(120deg, #919add  0%, #baa0c4 40%); */
+            /* background: linear-gradient(90deg,#e0c3fc, #c1acee); */
+            background: linear-gradient(120deg, #514993 0%, #ced0df 100%);
+        }
+
+        .task-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border: 1px solid #3e0e4c;
+            /* background: linear-gradient(120deg, #514993 0%, #ced0df 100%); */
+            color: #000000;
+            border-radius: 8px;
+            box-shadow: 0 18px 24px rgba(63, 2, 51, 0.2);
+            padding: 1rem;
+            display: none;
+            z-index: 10;
+        }
+
+        .task-popup.active {
+            display: block;
+        }
+
+        .popup-button {
+            display: block;
+            width: 100%;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+            border-radius: 100px;
+            text-align: center;
+            color: white;
+            cursor: pointer;
+        }
+
+        .incomplete {
+            background-color: red;
+        }
+
+        .mark-done {
+            background-color: green;
+        }
+
+        .in-progress {
+            background-color: yellow;
+        }
+
+        .cancel {
+            background-color: gray;
+        }
+
+        /* Custom Styling for the scroll Bar */
+        @media (min-width: 768px) {
+            .scrollbar-l-blue {
+                max-height: 345px;
+                overflow-y: auto;
+            }
+
+            .scrollbar-l-blue::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            .scrollbar-l-blue::-webkit-scrollbar-thumb {
+                background-color: #7B1FA2;
+                border-radius: 5px;
+            }
+        }
+    </style>
+</head>
+
+<body class="text-white flex flex-col min-h-screen">
+
+    <!-- Header -->
+    <header class="absolute flex justify-between top-0 w-full bg-purple-700 p-4 text-white text-center lg:px-12">
+        <h1 class="text-3xl font-bold mb-2">TO-DO</h1>
+        <!-- <img src="./logo.png" alt="logo" width="100px" height="100px"> -->
+        <span class="text-3xl text-white"><i class="fa-solid fa-calendar-check"></i></span>
+    </header>
+
+    <!-- Main -->
+    <main class="flex-grow w-full flex justify-center mt-24 lg:pt-2 pb-12">
+        <div class="flex flex-col px-4 w-full lg:max-w-lg">
+            <div class="flex items-center mx-2 justify-between mb-4 mt-4 lg:mt-4">
+                <input id="taskInput" type="text" placeholder="Add a new task..."
+                    class="w-full p-3 text-black rounded-l-full bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button id="addTaskBtn"
+                    class="p-3 bg-purple-900 text-white rounded-r-full hover:bg-blue-700 font-bold transition-colors">Add</button>
+            </div>
+            <p class="mx-auto text-[20px]  lg:text-[25px] mt-4 font-bold mb-4">Scroll down to see the <span
+                    class="text-purple-700"> latest tasks!</span></p>
+
+            <!-- Task List -->
+            <div
+                class="flex-grow w-full h-[380px] bg-transparent border p-2 border-purple-900 rounded-lg shadow-lg mb-6 overflow-y-auto  scrollbar-l-blue">
+                <ul id="taskList" class="space-y-2 mb-12 lg:mb-0"></ul>
+            </div>
+        </div>
+    </main>
+
+
+    <!-- Footer -->
+    <footer class=" w-full absolute bottom-0  bg-purple-700 p-4 px-4 text-white text-center md:relative lg:relative">
+        <p class="text-sm">&copy; 2024 TODO App. All rights reserved.</p>
+        <div class="mt-4">
+            <a href="#" class="text-blue-400 hover:text-blue-500 mx-2">Privacy</a>
+            <a href="#" class="text-blue-400 hover:text-blue-500 mx-2">Terms of Service</a>
+            <a href="#" class="text-blue-400 hover:text-blue-500 mx-2">Contact Us</a>
+        </div>
+    </footer>
+
+    <!-- Popup for Marking teh Task State -->
+    <div id="taskPopup" class="task-popup shadow-lg">
+        <div class="flex justify-center items-center">
+            <p class="font-bold">Mark State</p>
+        </div>
+        <button class="popup-button incomplete hover:bg-red-200 hover:text-black"><i class="fas fa-times"></i>
+            Incomplete</button>
+        <button class="popup-button mark-done hover:bg-green-200 hover:text-black"><i class="fas fa-check"></i> Mark as
+            Done</button>
+        <button class="popup-button in-progress bg-yellow-400 hover:bg-yellow-200 hover:text-black"><i
+                class="fas fa-spinner"></i> In Progress</button>
+        <button class="popup-button waiting-for-approval bg-blue-400 hover:bg-blue-200 hover:text-black"><i
+                class="fas fa-spinner"></i> Waiting for Approval</button>
+        <button class="popup-button cancel hover:bg-gray-200 hover:text-black"><i class="fas fa-ban"></i>
+            Cancel</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
