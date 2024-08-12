@@ -4,15 +4,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const addTaskBtn = document.getElementById('addTaskBtn');
     const taskList = document.getElementById('taskList');
     const taskPopup = document.getElementById('taskPopup');
-    const noTaskMessage = document.getElementById('noTaskMessage'); 
-    const noTaskImage = document.getElementById('noTaskImage'); 
+    const noTaskMessage = document.getElementById('noTaskMessage');
+    const noTaskImage = document.getElementById('noTaskImage');
 
     // Cross button to close the taskpopup (Mark the states)
     const closePopupBtn = document.createElement('button');
 
     // Add cross icon to popup for manual close
     closePopupBtn.innerHTML = '&times;';
-    closePopupBtn.className = 'close-popup-btn text-black text-xl absolute top-2 right-2 cursor-pointer';
+    closePopupBtn.className = 'close-popup-btn text-purple-900 font-bold text-xl absolute top-2 right-2 cursor-pointer';
     taskPopup.appendChild(closePopupBtn);
 
     // All tasks
@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         editBtn.addEventListener('click', () => editTask(task));
         deleteBtn.addEventListener('click', () => deleteTask(task.id, taskItem));
-        statusBtn.addEventListener('click', () => openStatusPopup(task, taskItem));
+        statusBtn.addEventListener('click', () => toggleStatusPopup(task, taskItem));
     }
 
 
@@ -154,6 +154,21 @@ document.addEventListener('DOMContentLoaded', () => {
         taskItem.remove();
         alert('Task deleted successfully');
         loadTasks();
+    }
+
+    // Close Status popup Function
+    function closeStatusPopup() {
+        taskPopup.classList.remove('active');
+    }
+
+    // Toggle stataus popup (used by status btn icon in li)
+    function toggleStatusPopup(task, taskItem) {
+        // Check if the popup is already open
+        if (taskPopup.classList.contains('active')) {
+            closeStatusPopup();
+        } else {
+            openStatusPopup(task, taskItem);
+        }
     }
 
     // Open Status popup Function
