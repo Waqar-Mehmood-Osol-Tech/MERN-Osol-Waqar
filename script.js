@@ -4,6 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const addTaskBtn = document.getElementById('addTaskBtn');
     const taskList = document.getElementById('taskList');
     const taskPopup = document.getElementById('taskPopup');
+    const noTaskMessage = document.getElementById('noTaskMessage'); 
+    const noTaskImage = document.getElementById('noTaskImage'); 
 
     // Cross button to close the taskpopup (Mark the states)
     const closePopupBtn = document.createElement('button');
@@ -34,28 +36,41 @@ document.addEventListener('DOMContentLoaded', () => {
         const taskText = taskInput.value.trim();
         if (taskText === '') return;
 
-        // create an object to store the task
+        // Create an object to store the task
         const task = {
             id: Date.now(),
             text: taskText,
-            // by default we assign am incomplete state to the task
+            // By default, assign an incomplete state to the task
             status: 'incomplete'
         };
 
-        // Add task to the list
-        tasks.push(task);
+        // Add the task to the beginning of the list
+        tasks.unshift(task);
         localStorage.setItem('tasks', JSON.stringify(tasks));
         taskInput.value = '';
 
-        renderTask(task);
+        // Clear the task list and render all tasks to maintain the correct order
+        taskList.innerHTML = '';
+        loadTasks();
     }
 
-    // function to load all the tasks from storage
+
+    // Function to load all the tasks from storage
     function loadTasks() {
         taskList.innerHTML = ''; // Clear the list before loading
-        tasks.forEach(task => {
-            renderTask(task);
-        });
+
+        if (tasks.length === 0) {
+            // Show the no task message and image if there are no tasks in the list
+            noTaskMessage.style.display = 'block';
+            noTaskImage.style.display = 'block';
+        } else {
+            // Hide the no task message and image if there are tasks
+            noTaskMessage.style.display = 'none';
+            noTaskImage.style.display = 'none';
+            tasks.forEach(task => {
+                renderTask(task);
+            });
+        }
     }
 
     // Function to render the single task
@@ -83,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 bgColor = 'bg-gray-100';
                 break;
             default:
-                icon = ''; 
+                icon = '';
                 bgColor = 'bg-red-100';
         }
 
@@ -138,6 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('tasks', JSON.stringify(tasks));
         taskItem.remove();
         alert('Task deleted successfully');
+        loadTasks();
     }
 
     // Open Status popup Function
