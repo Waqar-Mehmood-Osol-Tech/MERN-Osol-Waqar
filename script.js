@@ -7,6 +7,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const noTaskMessage = document.getElementById('noTaskMessage');
     const noTaskImage = document.getElementById('noTaskImage');
 
+    // Get references to the edit and delete popups and close buttons
+    const editPopup = document.getElementById('editPopup');
+    const deletePopup = document.getElementById('deletePopup');
+    const editCloseBtn = document.getElementById('editCloseBtn');
+    const deleteNoBtn = document.getElementById('deleteNoBtn');
+
     // Cross button to close the taskpopup (Mark the states)
     const closePopupBtn = document.createElement('button');
 
@@ -82,23 +88,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
         switch (task.status) {
             case 'done':
-                icon = '<i class="fas fa-check-circle text-green-500"></i>';
+                icon = '<i class="fas fa-check-circle text-green-500 text-sm"></i>';
                 bgColor = 'bg-green-100';
                 break;
             case 'waiting-for-approval':
-                icon = '<i class="fas fa-check-circle text-blue-500"></i>';
+                icon = '<i class="fas fa-check-circle text-blue-500 text-sm"></i>';
                 bgColor = 'bg-blue-100';
                 break;
             case 'in-progress':
-                icon = '<i class="fas fa-spinner text-yellow-500"></i>';
+                icon = '<i class="fas fa-spinner text-yellow-500 text-sm"></i>';
                 bgColor = 'bg-yellow-100';
                 break;
             case 'cancelled':
-                icon = '<i class="fas fa-ban text-gray-500"></i>';
+                icon = '<i class="fas fa-ban text-gray-500 text-sm"></i>';
                 bgColor = 'bg-gray-100';
                 break;
             default:
-                icon = '';
+                icon = '<i class="fa-solid fa-circle-exclamation text-red-500 text-sm"></i>';
                 bgColor = 'bg-red-100';
         }
 
@@ -107,21 +113,24 @@ document.addEventListener('DOMContentLoaded', () => {
         taskItem.className = `${bgColor} text-black p-3 rounded-lg flex justify-between items-center hover:`;
 
         taskItem.innerHTML = `
-            <div class="flex-1 mr-4" style="flex-basis: 70%; min-width: 0;">
-                <h3 class="ttext text-xl font-bold text-gray-900 break-words ${task.status === 'cancelled' ? 'line-through' : ''}">
-                    ${icon} ${task.text}
-                </h3>
-                <p class="task-status text-${getStatusColor(task.status)}-500">${task.status}</p>
+            <div class="flex items-start" style="flex-basis: 70%; min-width: 0%;">
+                <span class="mr-2">${icon}</span>
+                <div class="flex-1">
+                    <h3 class="text text-md pr-2 font-bold text-gray-900 break-words ${task.status === 'cancelled' ? 'line-through' : ''}">
+                        ${task.text}
+                    </h3>
+                    <p class="task-status text-sm text-${getStatusColor(task.status)}-500">${task.status}</p>
+                </div>
             </div>
             <div class="flex items-center gap-2 lg:ml-24" style="flex-basis: 30%;">
                 <button class="edit-btn text-blue-500">
-                    <i class="fas fa-pencil-alt text-purple-700"></i>
+                    <i class="fas fa-pencil-alt text-sm text-purple-700"></i>
                 </button>
                 <button class="delete-btn text-red-500 mx-2">
-                    <i class="fas fa-trash"></i>
+                    <i class="fas fa-trash text-sm"></i>
                 </button>
                 <button class="status-btn text-blue-500">
-                <i class="fa-solid fa-circle-chevron-down text-purple-700"></i>
+               <svg class="text-purple-700 mt-1 text-lg" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 20 20"><path fill="currentColor" d="M16 2H7.979C6.88 2 6 2.88 6 3.98V12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2m0 10H8V4h8zM4 10H2v6c0 1.1.9 2 2 2h6v-2H4z"/></svg>
                 </button>
             </div>
         `;
@@ -137,24 +146,58 @@ document.addEventListener('DOMContentLoaded', () => {
         statusBtn.addEventListener('click', () => toggleStatusPopup(task, taskItem));
     }
 
-
-    // Edit task Function
+    // Edit task function
     function editTask(task) {
-        const newText = prompt('Edit Task:', task.text);
-        if (newText !== null && newText.trim() !== '') {
-            task.text = newText;
-            updateTasks();
-        }
+        // Set the current task text in the edit input field
+        const editTaskInput = document.getElementById('editTaskInput');
+        editTaskInput.value = task.text;
+
+        // Show the edit popup
+        editPopup.classList.remove('hidden');
+
+        // Handle the update action
+        document.getElementById('editOkBtn').onclick = () => {
+            const newText = editTaskInput.value.trim();
+            if (newText !== '') {
+                task.text = newText;
+                updateTasks();
+                editPopup.classList.add('hidden'); // Close popup after editing
+            }
+        };
     }
 
-    // Delete task Function
+    // Delete task function
     function deleteTask(id, taskItem) {
-        tasks = tasks.filter(task => task.id !== id);
-        localStorage.setItem('tasks', JSON.stringify(tasks));
-        taskItem.remove();
-        alert('Task deleted successfully');
-        loadTasks();
+        // Show the delete confirmation popup
+        deletePopup.classList.remove('hidden');
+
+        // Handle the delete confirmation
+        document.getElementById('deleteYesBtn').onclick = () => {
+            tasks = tasks.filter(task => task.id !== id);
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            taskItem.remove();
+            deletePopup.classList.add('hidden'); // Close popup after deletion
+            loadTasks();
+        };
     }
+
+    // Close popups when clicking the cancel buttons
+    editCloseBtn.addEventListener('click', () => {
+        editPopup.classList.add('hidden');
+    });
+
+    deleteNoBtn.addEventListener('click', () => {
+        deletePopup.classList.add('hidden');
+    });
+
+    // Close popups when clicking outside the popup content
+    window.addEventListener('click', (event) => {
+        if (event.target === editPopup) {
+            editPopup.classList.add('hidden');
+        } else if (event.target === deletePopup) {
+            deletePopup.classList.add('hidden');
+        }
+    });
 
     // Close Status popup Function
     function closeStatusPopup() {
@@ -196,6 +239,58 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Set status function to update the specific li
+    // function setStatus(task, status, taskItem, closePopup) {
+    //     task.status = status;
+
+    //     // Update the task status in local storage
+    //     tasks = tasks.map(t => t.id === task.id ? { ...t, status: status } : t);
+    //     localStorage.setItem('tasks', JSON.stringify(tasks));
+
+    //     const statusElement = taskItem.querySelector('.task-status');
+    //     const textElement = taskItem.querySelector('.ttext');
+
+    //     // Update status text, icon, background color, and text style on status
+    //     let icon = '';
+    //     let bgColor = 'bg-white'; // Default background color
+
+    //     switch (status) {
+    //         case 'done':
+    //             icon = '<i class="fas fa-check-circle text-green-500 text-sm"></i>';
+    //             bgColor = 'bg-green-100';
+    //             textElement.classList.remove('line-through');
+    //             break;
+    //         case 'waiting-for-approval':
+    //             icon = '<i class="fas fa-check-circle text-blue-500 text-sm"></i>';
+    //             bgColor = 'bg-blue-100';
+    //             textElement.classList.remove('line-through');
+    //             break;
+    //         case 'in-progress':
+    //             icon = '<i class="fas fa-spinner text-yellow-500 text-sm"></i>';
+    //             bgColor = 'bg-yellow-100';
+    //             textElement.classList.remove('line-through');
+    //             break;
+    //         case 'cancelled':
+    //             icon = '<i class="fas fa-ban text-gray-500 text-sm"></i>';
+    //             bgColor = 'bg-gray-100';
+    //             textElement.classList.add('line-through');
+    //             break;
+    //         default:
+    //             icon = '<i class="fa-solid fa-circle-exclamation text-red-500"></i>'; // No icon for incomplete
+    //             bgColor = 'bg-red-100';
+    //             textElement.classList.remove('line-through');
+    //     }
+
+    //     // Update the task item background color, icon, and text
+    //     taskItem.className = `${bgColor} text-black p-3 rounded-lg flex justify-between items-center`;
+    //     textElement.innerHTML = `${icon} ${task.text}`;
+
+    //     // Update status text and color
+    //     statusElement.textContent = status;
+    //     statusElement.className = `task-status text-${getStatusColor(status)}-500`;
+
+    //     if (closePopup) closePopup();
+    // }
+
     function setStatus(task, status, taskItem, closePopup) {
         task.status = status;
 
@@ -204,7 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('tasks', JSON.stringify(tasks));
 
         const statusElement = taskItem.querySelector('.task-status');
-        const textElement = taskItem.querySelector('.ttext');
+        const textElement = taskItem.querySelector('h3');
 
         // Update status text, icon, background color, and text style on status
         let icon = '';
@@ -212,41 +307,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
         switch (status) {
             case 'done':
-                icon = '<i class="fas fa-check-circle text-green-500"></i>';
+                icon = '<i class="fas fa-check-circle text-green-500 text-sm"></i>';
                 bgColor = 'bg-green-100';
                 textElement.classList.remove('line-through');
                 break;
             case 'waiting-for-approval':
-                icon = '<i class="fas fa-check-circle text-blue-500"></i>';
+                icon = '<i class="fas fa-check-circle text-blue-500 text-sm"></i>';
                 bgColor = 'bg-blue-100';
                 textElement.classList.remove('line-through');
                 break;
             case 'in-progress':
-                icon = '<i class="fas fa-spinner text-yellow-500"></i>';
+                icon = '<i class="fas fa-spinner text-yellow-500 text-sm"></i>';
                 bgColor = 'bg-yellow-100';
                 textElement.classList.remove('line-through');
                 break;
             case 'cancelled':
-                icon = '<i class="fas fa-ban text-gray-500"></i>';
+                icon = '<i class="fas fa-ban text-gray-500 text-sm"></i>';
                 bgColor = 'bg-gray-100';
                 textElement.classList.add('line-through');
                 break;
             default:
-                icon = ''; // No icon for incomplete
+                icon = '<i class="fa-solid fa-circle-exclamation text-red-500"></i>'; 
                 bgColor = 'bg-red-100';
                 textElement.classList.remove('line-through');
         }
 
         // Update the task item background color, icon, and text
         taskItem.className = `${bgColor} text-black p-3 rounded-lg flex justify-between items-center`;
-        textElement.innerHTML = `${icon} ${task.text}`;
-
-        // Update status text and color
+        taskItem.querySelector('span').innerHTML = icon;
         statusElement.textContent = status;
         statusElement.className = `task-status text-${getStatusColor(status)}-500`;
 
         if (closePopup) closePopup();
     }
+
 
     // Update localStorage and re-render the tasks
     function updateTasks() {
@@ -268,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'cancelled':
                 return 'gray';
             default:
-                return 'black';
+                return 'white';
         }
     }
 });
