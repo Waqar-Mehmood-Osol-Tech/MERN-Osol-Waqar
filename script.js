@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const deletePopup = document.getElementById('deletePopup');
     const editCloseBtn = document.getElementById('editCloseBtn');
     const deleteNoBtn = document.getElementById('deleteNoBtn');
+    const editTaskInput = document.getElementById('editTaskInput');
 
     // Cross button to close the taskpopup (Mark the states)
     const closePopupBtn = document.createElement('button');
@@ -30,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add task
     addTaskBtn.addEventListener('click', addTask);
 
-    // Add event listner to add task on pressing the Enter
+    // Add event listner to add task on pressing the enter
     taskInput.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
             addTask();
@@ -40,7 +41,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add Task Function
     function addTask() {
         const taskText = taskInput.value.trim();
-        if (taskText === '') return;
+
+        // Necessary Checks
+        if (taskText === '') {
+            alert('Please enter a task');
+            return;
+        };
+
+        if (taskText.length > 255) {
+            alert("Task text cannot be greater than 255 characters.");
+            return;
+        };
 
         // Create an object to store the task
         const task = {
@@ -59,7 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
         taskList.innerHTML = '';
         loadTasks();
     }
-
 
     // Function to load all the tasks from storage
     function loadTasks() {
@@ -110,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Create a new li for the task
         const taskItem = document.createElement('li');
-        taskItem.className = `${bgColor} text-black p-3 rounded-lg flex justify-between items-center hover:`;
+        taskItem.className = `${bgColor} text-black p-3 rounded-lg flex justify-between items-center lg:transition lg:duration-300 lg:ease-in-out lg:transform lg:hover:scale-95 lg:hover:bg-${bgColor} `;
 
         taskItem.innerHTML = `
             <div class="flex items-start" style="flex-basis: 70%; min-width: 0%;">
@@ -149,7 +159,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Edit task function
     function editTask(task) {
         // Set the current task text in the edit input field
-        const editTaskInput = document.getElementById('editTaskInput');
         editTaskInput.value = task.text;
 
         // Show the edit popup
@@ -158,7 +167,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Handle the update action
         document.getElementById('editOkBtn').onclick = () => {
             const newText = editTaskInput.value.trim();
-            if (newText !== '') {
+
+            // Necessary Checks
+            if (newText !== '' && newText.length < 255) {
                 task.text = newText;
                 updateTasks();
                 editPopup.classList.add('hidden'); // Close popup after editing
@@ -239,58 +250,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Set status function to update the specific li
-    // function setStatus(task, status, taskItem, closePopup) {
-    //     task.status = status;
-
-    //     // Update the task status in local storage
-    //     tasks = tasks.map(t => t.id === task.id ? { ...t, status: status } : t);
-    //     localStorage.setItem('tasks', JSON.stringify(tasks));
-
-    //     const statusElement = taskItem.querySelector('.task-status');
-    //     const textElement = taskItem.querySelector('.ttext');
-
-    //     // Update status text, icon, background color, and text style on status
-    //     let icon = '';
-    //     let bgColor = 'bg-white'; // Default background color
-
-    //     switch (status) {
-    //         case 'done':
-    //             icon = '<i class="fas fa-check-circle text-green-500 text-sm"></i>';
-    //             bgColor = 'bg-green-100';
-    //             textElement.classList.remove('line-through');
-    //             break;
-    //         case 'waiting-for-approval':
-    //             icon = '<i class="fas fa-check-circle text-blue-500 text-sm"></i>';
-    //             bgColor = 'bg-blue-100';
-    //             textElement.classList.remove('line-through');
-    //             break;
-    //         case 'in-progress':
-    //             icon = '<i class="fas fa-spinner text-yellow-500 text-sm"></i>';
-    //             bgColor = 'bg-yellow-100';
-    //             textElement.classList.remove('line-through');
-    //             break;
-    //         case 'cancelled':
-    //             icon = '<i class="fas fa-ban text-gray-500 text-sm"></i>';
-    //             bgColor = 'bg-gray-100';
-    //             textElement.classList.add('line-through');
-    //             break;
-    //         default:
-    //             icon = '<i class="fa-solid fa-circle-exclamation text-red-500"></i>'; // No icon for incomplete
-    //             bgColor = 'bg-red-100';
-    //             textElement.classList.remove('line-through');
-    //     }
-
-    //     // Update the task item background color, icon, and text
-    //     taskItem.className = `${bgColor} text-black p-3 rounded-lg flex justify-between items-center`;
-    //     textElement.innerHTML = `${icon} ${task.text}`;
-
-    //     // Update status text and color
-    //     statusElement.textContent = status;
-    //     statusElement.className = `task-status text-${getStatusColor(status)}-500`;
-
-    //     if (closePopup) closePopup();
-    // }
-
     function setStatus(task, status, taskItem, closePopup) {
         task.status = status;
 
@@ -327,7 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 textElement.classList.add('line-through');
                 break;
             default:
-                icon = '<i class="fa-solid fa-circle-exclamation text-red-500"></i>'; 
+                icon = '<i class="fa-solid fa-circle-exclamation text-red-500"></i>';
                 bgColor = 'bg-red-100';
                 textElement.classList.remove('line-through');
         }
