@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
             errorPopup.classList.remove('hidden');
             setTimeout(function () {
                 errorPopup.classList.add('hidden');
-            }, 1000); // 2000 ms = 2 seconds
+            }, 1000); // 1000 ms = 2 seconds
             return;
         };
 
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
             errorPopup.classList.remove('hidden');
             setTimeout(function () {
                 errorPopup.classList.add('hidden');
-            }, 1000); // 2000 ms = 2 seconds
+            }, 1000); // 1000 ms = 2 seconds
             return;
         };
 
