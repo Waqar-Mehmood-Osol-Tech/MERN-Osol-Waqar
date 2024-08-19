@@ -7,14 +7,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const noTaskMessage = document.getElementById('noTaskMessage');
     const noTaskImage = document.getElementById('noTaskImage');
 
-    // Get references to the edit and delete popups and close buttons
+    // Get references to the edit and delete popups, close buttons, success and error popups
     const editPopup = document.getElementById('editPopup');
     const deletePopup = document.getElementById('deletePopup');
     const editCloseBtn = document.getElementById('editCloseBtn');
     const deleteNoBtn = document.getElementById('deleteNoBtn');
     const editTaskInput = document.getElementById('editTaskInput');
+    const errorPopup = document.getElementById('errorPopup');
+    const err1 = document.getElementById('err1');
+    const successPopup = document.getElementById('successPopup');
+    const success1 = document.getElementById('success1');
+    const editErr = document.getElementById('editErr');
 
-    // Cross button to close the taskpopup (Mark the states)
+    // Cross button to close the taskpopup (Mark the states popup)
     const closePopupBtn = document.createElement('button');
 
     // Add cross icon to popup for manual close
@@ -28,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load tasks from local storage (whenn page refresh)
     loadTasks();
 
-    // Add task
+    // Add task event listner
     addTaskBtn.addEventListener('click', addTask);
 
     // Add event listner to add task on pressing the enter
@@ -38,18 +43,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Add a event listner on the enter key to confirm update task
+    editTaskInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            document.getElementById('editOkBtn').click();
+        }
+    });
+
+
     // Add Task Function
     function addTask() {
         const taskText = taskInput.value.trim();
 
         // Necessary Checks
         if (taskText === '') {
-            alert('Please enter a task');
+            err1.innerHTML = 'Empty value not accepted!';
+            errorPopup.classList.remove('hidden');
+            setTimeout(function () {
+                errorPopup.classList.add('hidden');
+            }, 2000); // 2000 ms = 2 seconds
             return;
         };
 
-        if (taskText.length > 255) {
-            alert("Task text cannot be greater than 255 characters.");
+        if (taskText.length > 50) {
+            err1.innerHTML = 'Task length cannot be greater than 50 characters!';
+            errorPopup.classList.remove('hidden');
+            setTimeout(function () {
+                errorPopup.classList.add('hidden');
+            }, 2000); // 2000 ms = 2 seconds
             return;
         };
 
@@ -57,8 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const task = {
             id: Date.now(),
             text: taskText,
-            // By default, assign an incomplete state to the task
-            status: 'incomplete'
+            // By default, we assign incomplete state to the task
+            status: 'incomplete',
         };
 
         // Add the task to the beginning of the list
@@ -88,6 +109,19 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     }
+
+    // Initialize Sortable to add the functionality of the Drag and Drop in the Task List
+    const sortable = Sortable.create(taskList, {
+        handle: '.draggable-handle',
+        onEnd: (event) => {
+            // Update task order in localStorage after reordering
+            const reorderedTasks = Array.from(taskList.children).map(li => {
+                return tasks.find(task => task.id === parseInt(li.getAttribute('data-id')));
+            });
+            tasks = reorderedTasks;
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+    });
 
     // Function to render the single task
     function renderTask(task) {
@@ -120,33 +154,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Create a new li for the task
         const taskItem = document.createElement('li');
-        taskItem.className = `${bgColor} text-black p-3 rounded-lg flex justify-between items-center lg:transition lg:duration-300 lg:ease-in-out lg:transform lg:hover:scale-95 lg:hover:bg-${bgColor} `;
+        taskItem.className = `${bgColor} text-black p-3 rounded-lg flex justify-between items-center lg:hover:bg-${bgColor} ;`
+        taskItem.setAttribute('data-id', task.id);
 
         taskItem.innerHTML = `
-            <div class="flex items-start" style="flex-basis: 70%; min-width: 0%;">
-                <span class="mr-2">${icon}</span>
+            <div class="draggable-handle flex items-start" style="flex-basis: 70%; min-width: 0%;">
+                <span class="mr-2 ml-2 text-sm">${icon}</span>
                 <div class="flex-1">
-                    <h3 class="text text-md pr-2 font-bold text-gray-900 break-words ${task.status === 'cancelled' ? 'line-through' : ''}">
+                    <h3 class="text text-sm pr-2 font-bold text-gray-900 break-words ${task.status === 'cancelled' ? 'line-through' : ''}">
                         ${task.text}
                     </h3>
-                    <p class="task-status text-sm text-${getStatusColor(task.status)}-500">${task.status}</p>
+                    <p class="task-status text-xs text-${getStatusColor(task.status)}-500">${task.status}</p>
                 </div>
             </div>
-            <div class="flex items-center gap-2 lg:ml-24" style="flex-basis: 30%;">
+            <div class="flex items-center gap-2 lg:ml-24 lg:gap-4 lg:pl-4" >
                 <button class="edit-btn text-blue-500">
-                    <i class="fas fa-pencil-alt text-sm text-purple-700"></i>
+                    <i class="fas fa-pencil-alt text-xs text-purple-700"></i>
                 </button>
-                <button class="delete-btn text-red-500 mx-2">
-                    <i class="fas fa-trash text-sm"></i>
+                <button class="delete-btn text-red-500 mx-2" >
+                    <i class="fas fa-trash text-xs"></i>
                 </button>
-                <button class="status-btn text-blue-500">
-               <svg class="text-purple-700 mt-1 text-lg" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 20 20"><path fill="currentColor" d="M16 2H7.979C6.88 2 6 2.88 6 3.98V12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2m0 10H8V4h8zM4 10H2v6c0 1.1.9 2 2 2h6v-2H4z"/></svg>
+                <button class="status-btn text-blue-500"  >
+                <svg class="text-purple-700 mt-1.5 font-bold " xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 8 8"><path fill="currentColor" d="M0 0v7h7V3.41l-1 1V6H1V1h3.59l1-1zm7 0L4 3L3 2L2 3l2 2l4-4z"/></svg>    
                 </button>
             </div>
         `;
+
         taskList.appendChild(taskItem);
 
-        // Event listners on buttons to handle th edit , delete and states
+        // Event listners on buttons to handle th edit , delete and states of a specific task
         const editBtn = taskItem.querySelector('.edit-btn');
         const deleteBtn = taskItem.querySelector('.delete-btn');
         const statusBtn = taskItem.querySelector('.status-btn');
@@ -154,6 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
         editBtn.addEventListener('click', () => editTask(task));
         deleteBtn.addEventListener('click', () => deleteTask(task.id, taskItem));
         statusBtn.addEventListener('click', () => toggleStatusPopup(task, taskItem));
+
     }
 
     // Edit task function
@@ -166,13 +203,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Handle the update action
         document.getElementById('editOkBtn').onclick = () => {
+            const prevTextVal = task.text;
             const newText = editTaskInput.value.trim();
-
             // Necessary Checks
-            if (newText !== '' && newText.length < 255) {
+            if (newText === '') {
+                editErr.innerHTML = 'Empty value not accepted!';
+                editErr.classList.remove('hidden');
+                setTimeout(function () {
+                    editErr.classList.add('hidden');
+                    editTaskInput.value = task.text; // Reset the input field to the original task text
+                }, 2000); // 2000 ms = 2 seconds
+            }
+            else if (newText.length > 50) {
+                editErr.innerHTML = 'Task length must be in 50 characters!';
+                editErr.classList.remove('hidden');
+                setTimeout(function () {
+                    editErr.classList.add('hidden');
+                    editTaskInput.value = task.text; // Reset the input field to the original task text
+                }, 2000); // 2000 ms = 2 seconds
+            }
+            else {
                 task.text = newText;
                 updateTasks();
                 editPopup.classList.add('hidden'); // Close popup after editing
+                success1.innerHTML = `Task edited from '${prevTextVal}' to '${newText}'.`
+                successPopup.classList.remove('hidden');
+                setTimeout(function () {
+                    successPopup.classList.add('hidden');
+                }, 2000); // 2000 ms = 2 seconds
             }
         };
     }
@@ -181,18 +239,23 @@ document.addEventListener('DOMContentLoaded', () => {
     function deleteTask(id, taskItem) {
         // Show the delete confirmation popup
         deletePopup.classList.remove('hidden');
-
         // Handle the delete confirmation
         document.getElementById('deleteYesBtn').onclick = () => {
             tasks = tasks.filter(task => task.id !== id);
             localStorage.setItem('tasks', JSON.stringify(tasks));
             taskItem.remove();
             deletePopup.classList.add('hidden'); // Close popup after deletion
+            success1.innerHTML = 'Task deleted successfully!';
+            successPopup.classList.remove('hidden');
+            setTimeout(function () {
+                successPopup.classList.add('hidden');
+            }, 500); // 2000 ms = 2 seconds
             loadTasks();
+            return;
         };
     }
 
-    // Close popups when clicking the cancel buttons
+    // Close popups when clicking the cancel buttons in edit and delete popups
     editCloseBtn.addEventListener('click', () => {
         editPopup.classList.add('hidden');
     });
@@ -201,27 +264,50 @@ document.addEventListener('DOMContentLoaded', () => {
         deletePopup.classList.add('hidden');
     });
 
-    // Close popups when clicking outside the popup content
+    // Close popups when clicking outside the popups content (edit, delete and mark states popup)
     window.addEventListener('click', (event) => {
         if (event.target === editPopup) {
             editPopup.classList.add('hidden');
         } else if (event.target === deletePopup) {
             deletePopup.classList.add('hidden');
+        } else if (taskPopup.classList.contains('active') && !taskPopup.contains(event.target) && !event.target.closest('.status-btn')) {
+            taskPopup.classList.remove('active');
+
+            // Remove any specific styles or changes when the popup is closed
+            const taskItems = document.querySelectorAll('li[data-id]');
+            taskItems.forEach((taskItem) => {
+                taskItem.style.border = 'none';
+            });
         }
+
     });
 
-    // Close Status popup Function
-    function closeStatusPopup() {
+    // Close Status popup function
+    function closeStatusPopup(taskItem) {
+        taskItem.style.transition = 'none';
+        taskItem.style.border = 'none';
         taskPopup.classList.remove('active');
     }
 
-    // Toggle stataus popup (used by status btn icon in li)
+    // Toggle Status popup function
     function toggleStatusPopup(task, taskItem) {
+        event.stopPropagation();
+
+        const originalBorderStyle = taskItem.style.border;
         // Check if the popup is already open
         if (taskPopup.classList.contains('active')) {
-            closeStatusPopup();
+            closeStatusPopup(taskItem);
+            // Restore the original border style
         } else {
             openStatusPopup(task, taskItem);
+            // Add border with a transition effect
+            taskItem.style.transition = 'border 0.2s ease-out-in';
+            taskItem.style.border = '4px solid #570987';
+            // Add an event listener to get the original border style when popup is closed
+            taskPopup.addEventListener('click', () => {
+                closeStatusPopup(taskItem);
+                taskItem.style.border = originalBorderStyle;
+            });
         }
     }
 
@@ -243,6 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Close the task popup if clicks outside
         taskPopup.addEventListener('click', (event) => {
+            event.stopPropagation();
             if (event.target === taskPopup) {
                 closePopup();
             }
@@ -257,49 +344,13 @@ document.addEventListener('DOMContentLoaded', () => {
         tasks = tasks.map(t => t.id === task.id ? { ...t, status: status } : t);
         localStorage.setItem('tasks', JSON.stringify(tasks));
 
-        const statusElement = taskItem.querySelector('.task-status');
-        const textElement = taskItem.querySelector('h3');
-
-        // Update status text, icon, background color, and text style on status
-        let icon = '';
-        let bgColor = 'bg-white'; // Default background color
-
-        switch (status) {
-            case 'done':
-                icon = '<i class="fas fa-check-circle text-green-500 text-sm"></i>';
-                bgColor = 'bg-green-100';
-                textElement.classList.remove('line-through');
-                break;
-            case 'waiting-for-approval':
-                icon = '<i class="fas fa-check-circle text-blue-500 text-sm"></i>';
-                bgColor = 'bg-blue-100';
-                textElement.classList.remove('line-through');
-                break;
-            case 'in-progress':
-                icon = '<i class="fas fa-spinner text-yellow-500 text-sm"></i>';
-                bgColor = 'bg-yellow-100';
-                textElement.classList.remove('line-through');
-                break;
-            case 'cancelled':
-                icon = '<i class="fas fa-ban text-gray-500 text-sm"></i>';
-                bgColor = 'bg-gray-100';
-                textElement.classList.add('line-through');
-                break;
-            default:
-                icon = '<i class="fa-solid fa-circle-exclamation text-red-500"></i>';
-                bgColor = 'bg-red-100';
-                textElement.classList.remove('line-through');
-        }
-
-        // Update the task item background color, icon, and text
-        taskItem.className = `${bgColor} text-black p-3 rounded-lg flex justify-between items-center`;
-        taskItem.querySelector('span').innerHTML = icon;
-        statusElement.textContent = status;
-        statusElement.className = `task-status text-${getStatusColor(status)}-500`;
+        // adding a delay before re-rendering the task list
+        setTimeout(() => {
+            loadTasks();
+        }, 100);
 
         if (closePopup) closePopup();
     }
-
 
     // Update localStorage and re-render the tasks
     function updateTasks() {

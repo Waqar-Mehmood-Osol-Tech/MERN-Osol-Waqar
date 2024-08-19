@@ -6,6 +6,9 @@
     <title>Todo List by Waqar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.js"
+        integrity="sha512-7uomMJLUlyzgg7Cu8C57a3XB/JX2fLV1mWES4FpvJm4QgC2WDsBDDeFfOQkGpCfZFjNLhBqsXavmRQGs8X1SBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
         body {
             background: linear-gradient(120deg, #514993 0%, #ced0df 100%);
@@ -88,44 +91,41 @@
         }
     </style>
 </head>
-
 <body class="text-white flex flex-col min-h-screen">
-
     <!-- Header -->
-    <header class="absolute flex justify-between top-0 w-full bg-purple-700 p-4 text-white text-center lg:px-12">
+    <header class="relative flex justify-between w-full bg-purple-700 p-4 text-white text-center lg:px-12">
         <h1 class="text-2xl font-bold mb-2">TO-DO</h1>
         <span class="text-2xl text-white"><i class="fa-solid fa-calendar-check"></i></span>
     </header>
 
     <!-- Main -->
-    <main class="flex-grow w-full flex justify-center mt-24 lg:pt-2 pb-12">
-        <div class="flex flex-col px-4 w-full lg:max-w-lg">
+    <main class="flex-grow w-full flex justify-center mt-4 lg:mt-2 lg:pt-2 lg:pb-12 pb-0">
+        <div class="flex flex-col px-4 w-full lg:max-w-xl">
             <div class="flex items-center mx-2 justify-between mb-4 mt-4 lg:mt-4">
                 <input id="taskInput" type="text" placeholder="Add a new task..."
-                    class="w-full p-3 px-6 text-black rounded-l-full bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    class="w-full p-3 px-6 text-black text-sm rounded-l-full bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <button id="addTaskBtn"
-                    class="p-3 px-6 bg-purple-900 text-white rounded-r-full hover:bg-blue-700 font-bold transition-colors">Add</button>
+                    class="p-3 px-6 bg-purple-900 text-sm text-white rounded-r-full hover:bg-blue-700 font-bold transition-colors">Add</button>
             </div>
-            <p class="mx-auto text-[15px]  lg:text-[20px] mt-4 font-bold hover:text-purple-900">Manage you tasks here !</p>
-            <p class="mx-auto text-[20px]  lg:text-[25px] mt-2 font-bold mb-4">Scroll down to see all<span
+            <p class="mx-auto mt-4 text-md font-bold hover:text-purple-900">Manage your tasks here!</p>
+            <p class="mx-auto text-[20px] lg:text-[17px] mt-2 font-bold mb-4">Scroll down to see all<span
                     class="text-purple-900"> the tasks!</span></p>
 
             <!-- Task List -->
             <div
-                class="flex-grow w-full h-[380px] bg-transparent border p-2 border-purple-900 rounded-lg shadow-lg mb-6 overflow-y-auto  scrollbar-l-blue">
+                class="flex-grow w-full h-[380px] bg-transparent border p-2 border-purple-900 rounded-lg shadow-lg mb-6 overflow-y-auto scrollbar-l-blue">
                 <div id="noTaskMessage" class="hidden mt-24">
                     <img id="noTaskImage" src="./no-data.png" alt="No tasks" class="mx-auto w-24 h-24 mb-2">
                     <p class="text-white font-bold text-center">No tasks available. Add a task to <span
-                            class="text-purple-900">get started!</span> </p>
+                            class="text-purple-900">get started!</span></p>
                 </div>
                 <ul id="taskList" class="space-y-2 mb-12 lg:mb-0"></ul>
             </div>
         </div>
     </main>
 
-
     <!-- Footer -->
-    <footer class=" w-full absolute bottom-0  bg-purple-700 p-4 px-4 text-white text-center md:relative lg:relative">
+    <footer class="w-full bg-purple-700 p-4 px-4 text-white text-center">
         <p class="text-sm">&copy; 2024 TODO App. All rights reserved.</p>
         <div class="mt-4">
             <a href="#" class="text-blue-400 hover:text-blue-500 mx-2">Privacy</a>
@@ -140,22 +140,22 @@
             <p class="font-bold text-purple-900">Mark State</p>
         </div>
         <button
-            class="popup-button bg-[#ffb3ba] text-red-700 border-red-600 border-2 incomplete hover:bg-red-300 text-sm hover:text-black transition duration-300 ease-in-out transform hover:scale-105 hover:bg-red-100"><i
-                class="fa-solid fa-circle-exclamation mr-2 text-sm"></i>
+            class="popup-button bg-[#ffb3ba] text-red-700 border-red-600 border-2 incomplete hover:bg-red-300 text-xs hover:text-black transition duration-300 ease-in-out transform hover:scale-105 hover:bg-red-100"><i
+                class="fa-solid fa-circle-exclamation mr-2 text-xs"></i>
             Incomplete</button>
         <button
-            class="popup-button bg-[#baffc9] text-green-700 border-green-600 border-2 mark-done hover:bg-green-300 text-sm hover:text-black transition duration-300 ease-in-out transform hover:scale-105 hover:bg-green-100"><i
-                class="fas fa-check-circle mr-2 text-sm"></i> Mark as
+            class="popup-button bg-[#baffc9] text-green-700 border-green-600 border-2 mark-done hover:bg-green-300 text-xs hover:text-black transition duration-300 ease-in-out transform hover:scale-105 hover:bg-green-100"><i
+                class="fas fa-check-circle mr-2 text-xs"></i> Mark as
             Done</button>
         <button
-            class="popup-button text-yellow-700 border-yellow-600 border-2 in-progress bg-[#ffffba] text-sm hover:bg-yellow-200 hover:text-black transition duration-300 ease-in-out transform hover:scale-105 hover:bg-yellow-100"><i
-                class="fas fa-spinner mr-2"></i> In Progress</button>
+            class="popup-button text-yellow-700 border-yellow-600 border-2 in-progress bg-[#ffffba] text-xs hover:bg-yellow-200 hover:text-black transition duration-300 ease-in-out transform hover:scale-105 hover:bg-yellow-100"><i
+                class="fas fa-spinner mr-2 text-xs"></i> In Progress</button>
         <button
-            class="popup-button px-4 border-blue-600 border-2 text-blue-700 waiting-for-approval bg-[#bae1ff] text-sm hover:bg-blue-300 hover:text-black transition duration-300 ease-in-out transform hover:scale-105 hover:bg-blue-100"><i
-                class="fas fa-check-circle mr-2 text-sm"></i> Waiting for Approval</button>
+            class="popup-button px-4 border-blue-600 border-2 text-blue-700 waiting-for-approval bg-[#bae1ff] text-xs hover:bg-blue-300 hover:text-black transition duration-300 ease-in-out transform hover:scale-105 hover:bg-blue-100"><i
+                class="fas fa-check-circle mr-2 text-xs"></i> Waiting for Approval</button>
         <button
-            class="popup-button bg-gray-400 border-gray-600 border-2 cancel hover:bg-gray-300 text-sm hover:text-black transition duration-300 ease-in-out transform hover:scale-105 hover:bg-gray-100"><i
-                class="fas fa-ban mr-2"></i>
+            class="popup-button bg-gray-400 border-gray-600 border-2 cancel hover:bg-gray-300 text-xs hover:text-black transition duration-300 ease-in-out transform hover:scale-105 hover:bg-gray-100"><i
+                class="fas fa-ban mr-2 text-xs"></i>
             Cancel</button>
     </div>
 
@@ -171,18 +171,19 @@
                         d="m14.304 4.844l2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565l6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
                 </svg>
                 <h2 class="text-2xl text-purple-900 font-bold mb-4">Edit Task</h2>
-                <p class="text-center text-black text-sm"> Make changes to your task below </p>
-                <p class="text-center text-black mb-6 text-sm"> and click <span
+                <p class="text-center text-black text-xs"> Make changes to your task below </p>
+                <p class="text-center text-black mb-6 text-xs"> and click <span
                         class="text-purple-900 font-bold">update</span> when done.</p>
 
+                <p id="editErr" class="hidden text-red-500 text-xs font-bold mb-4 text-center"></p>
                 <input id="editTaskInput" type="text"
-                    class="w-full p-2 border border-purple-300 text-sm text-black rounded-lg" />
+                    class="w-full p-2 border border-purple-300 text-xs text-black rounded-lg" />
             </div>
             <div class="flex justify-center mb-6  mt-2">
                 <button id="editCloseBtn"
-                    class="mr-2 bg-gray-300 hover:bg-gray-700 text-sm hover:text-white px-4 py-2 text-gray-900 rounded-3xl">Cancel</button>
+                    class="mr-2 bg-gray-300 text-xs hover:bg-gray-700 text-sm hover:text-white px-4 py-2 text-gray-900 rounded-3xl">Cancel</button>
                 <button id="editOkBtn"
-                    class="bg-purple-700 hover:bg-purple-500 text-sm text-white px-4 py-2 rounded-3xl">update</button>
+                    class="bg-purple-700 text-xs hover:bg-purple-500 text-sm text-white px-4 py-2 rounded-3xl">update</button>
             </div>
         </div>
     </div>
@@ -197,16 +198,50 @@
                 <path fill="currentColor"
                     d="M768 0q209 0 385.5 103T1433 382.5T1536 768t-103 385.5t-279.5 279.5T768 1536t-385.5-103T103 1153.5T0 768t103-385.5T382.5 103T768 0m128 1247v-190q0-14-9-23.5t-22-9.5H673q-13 0-23 10t-10 23v190q0 13 10 23t23 10h192q13 0 22-9.5t9-23.5m-2-344l18-621q0-12-10-18q-10-8-24-8H658q-14 0-24 8q-10 6-10 18l17 621q0 10 10 17.5t24 7.5h185q14 0 23.5-7.5T894 903" />
             </svg>
-            <h2 class=" text-purple-900 font-bold text-center  mb-2 mt-4 text-sm">Are you sure you want to delete this
+            <h2 class=" text-purple-900 font-bold text-center  mb-2 mt-4 text-xs">Are you sure you want to delete this
                 task?</h2>
             <div class="flex justify-end mt-4 gap-6">
                 <button id="deleteYesBtn"
-                    class="bg-red-500 hover:bg-red-700 text-white text-sm px-4 py-2 rounded-3xl">Yes</button>
+                    class="bg-red-500 hover:bg-red-700 text-white text-xs px-4 py-2 rounded-3xl">Yes</button>
                 <button id="deleteNoBtn"
-                    class="mr-2 bg-gray-300 hover:bg-gray-500 text-gray-900 text-sm px-4 py-2 rounded-3xl">No</button>
+                    class="mr-2 bg-gray-300 hover:bg-gray-500 text-gray-900 text-xs px-4 py-2 rounded-3xl">No</button>
             </div>
         </div>
     </div>
+
+
+    <!-- Error Popup -->
+    <div id="errorPopup" class="popup bg-gray-50 hidden fixed inset-0 bg-opacity-75 flex items-center justify-center">
+        <div
+            class=" bg-gray-50 flex flex-col items-center justify-center border-2 border-red-700 rounded-lg shadow-lg relative">
+            <div class="p-6 flex flex-col items-center justify-center">
+                <svg class="text-red-500" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24">
+                    <path fill="currentColor"
+                        d="M12.884 2.532c-.346-.654-1.422-.654-1.768 0l-9 17A1 1 0 0 0 3 21h18a.998.998 0 0 0 .883-1.467zM13 18h-2v-2h2zm-2-4V9h2l.001 5z" />
+                </svg>
+                <h2 class="text-md text-red-500 font-bold mb-4">Error</h2>
+                <p id="err1" class="text-center mt-4 text-red-500 font-bold text-xs"></p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Success Popup -->
+    <div id="successPopup" class="popup bg-gray-50 hidden fixed inset-0 bg-opacity-75 flex items-center justify-center">
+        <div
+            class=" bg-gray-50 mx-6 flex flex-col items-center justify-center border-2 border-green-700 rounded-lg shadow-lg relative">
+            <div class="p-6 flex flex-col items-center justify-center">
+                <svg class="text-green-900" xmlns="http://www.w3.org/2000/svg" width="48" height="48"
+                    viewBox="0 0 20 20">
+                    <path fill="currentColor"
+                        d="M10 20a10 10 0 0 1 0-20a10 10 0 1 1 0 20m-2-5l9-8.5L15.5 5L8 12L4.5 8.5L3 10z" />
+                </svg>
+                <h2 class="text-md text-green-500 font-bold mb-4">Success</h2>
+                <p id="success1" class="text-center mt-4 text-green-500 font-bold text-xs"></p>
+            </div>
+        </div>
+    </div>
+
 
     <script src="script.js"></script>
 </body>
