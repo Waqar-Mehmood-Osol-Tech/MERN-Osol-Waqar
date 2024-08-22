@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Cross button to close the taskpopup (Mark the states popup)
     const closePopupBtn = document.createElement('button');
 
-    // Add cross icon to popup for manual close
+    // Add a cross icon to popup for manual close
     closePopupBtn.innerHTML = '&times;';
     closePopupBtn.className = 'close-popup-btn text-purple-900 font-bold text-xl absolute top-2 right-2 cursor-pointer';
     taskPopup.appendChild(closePopupBtn);
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
             errorPopup.classList.remove('hidden');
             setTimeout(function () {
                 errorPopup.classList.add('hidden');
-            }, 1000); // 1000 ms = 2 seconds
+            }, 1000); // 1000 ms = 1 seconds
             return;
         };
 
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
             errorPopup.classList.remove('hidden');
             setTimeout(function () {
                 errorPopup.classList.add('hidden');
-            }, 1000); // 1000 ms = 2 seconds
+            }, 1000); // 1000 ms = 1 seconds
             return;
         };
 
@@ -87,11 +87,12 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('tasks', JSON.stringify(tasks));
         taskInput.value = '';
 
-        // Clear the task list and render all tasks to maintain the correct order
+        // Clear task list and render all tasks to maintain the correct order
         taskList.innerHTML = '';
         loadTasks();
     }
 
+    
     // Function to load all the tasks from storage
     function loadTasks() {
         taskList.innerHTML = ''; // Clear the list before loading
@@ -126,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to render the single task
     function renderTask(task) {
         // Assign the icon and bg color on the basis of status
-        // By Default
+        // Intializing
         let icon = '';
         let bgColor = 'bg-white';
 
@@ -197,11 +198,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function editTask(task) {
         // Set the current task text in the edit input field
         editTaskInput.value = task.text;
-
         // Show the edit popup
         editPopup.classList.remove('hidden');
-
-        // Handle the update action
+        // update the task's text
         document.getElementById('editOkBtn').onclick = () => {
             const prevTextVal = task.text;
             const newText = editTaskInput.value.trim();
@@ -249,7 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
             successPopup.classList.remove('hidden');
             setTimeout(function () {
                 successPopup.classList.add('hidden');
-            }, 500); // 2000 ms = 2 seconds
+            }, 500); // 500 ms = 0.5 seconds
             loadTasks();
             return;
         };
